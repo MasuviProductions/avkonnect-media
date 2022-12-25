@@ -1,0 +1,53 @@
+{
+    "name": "node-boilerplate",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "build": "rimraf ./build && tsc",
+        "lint:fix": "eslint . --ext .ts --fix --max-warnings=0",
+        "lint": "eslint . --ext .ts",
+        "prettier:fix": "prettier --config .prettierrc --fix \"src/**/*.{ts,css,html}\" --max-warnings=0",
+        "start:dev": "nodemon",
+        "start:server": "node ./build/server.js",
+        "start": "npm run build && node build/server.js",
+        "serverless:credentials": "eval $(grep '^AWS_KEY' .env) && eval $(grep '^AWS_SECRET' .env) && serverless config credentials --provider aws --key ${AWS_KEY} --secret ${AWS_SECRET}",
+        "serverless:deploy:prod": "serverless deploy --stage prod",
+        "serverless:deploy:dev": "serverless deploy --stage dev"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "src/**/*.{ts,js,css,html}": [
+            "npm run prettier:fix",
+            "npm run lint:fix"
+        ]
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/dotenv": "^8.2.0",
+        "@types/node": "^17.0.21",
+        "@typescript-eslint/eslint-plugin": "^5.12.1",
+        "@typescript-eslint/parser": "^5.12.1",
+        "eslint": "^8.10.0",
+        "husky": "^4.3.8",
+        "lint-staged": "^12.3.4",
+        "nodemon": "^2.0.15",
+        "prettier": "^2.5.1",
+        "rimraf": "^3.0.2",
+        "ts-node": "^10.5.0",
+        "typescript": "^4.5.5"
+    },
+    "dependencies": {
+        "aws-sdk": "^2.1082.0",
+        "dotenv": "^16.0.0",
+        "fastify": "^3.27.2",
+        "serverless": "^3.4.0",
+        "serverless-http": "^2.7.0"
+    }
+}
