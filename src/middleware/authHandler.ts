@@ -9,7 +9,6 @@ import {
 import { ErrorCode, ErrorMessage } from '../constants/errors';
 import AVKKONNECT_CORE_SERVICE from '../services/avkonnect-core';
 import { HttpError } from '../utils/error';
-
 export const authHandler: preHandlerAsyncHookHandler = async (request) => {
     const authType = getAuthenticationTokenType(request.headers.authorization);
     const authToken = getTokenFromApiRequest(request.headers.authorization);

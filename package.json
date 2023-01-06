@@ -48,7 +48,7 @@
         "aws-sdk": "^2.1082.0",
         "dotenv": "^16.0.0",
         "dynamoose": "^2.8.5",
-        "fastify": "^3.29.4",
+        "fastify": "^3.27.2",
         "mongoose": "^6.8.2",
         "mongoose-lean-virtuals": "^0.9.1",
         "serverless": "^3.4.0",

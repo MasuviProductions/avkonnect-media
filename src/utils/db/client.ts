@@ -17,7 +17,6 @@ const initMongoDB = async () => {
         useNewUrlParser: true,
         keepAlive: true,
     };
-
     await mongoose.connect(ENV.MONGODB_URL, options);
 };
 
