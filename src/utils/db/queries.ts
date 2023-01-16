@@ -12,13 +12,13 @@ const createMedia = async (media: IMediaContent): Promise<IMediaContent | undefi
 //     return comment?.[0];
 // };
 
-const getMediaById = async (postId: string): Promise<IMediaContent | undefined> => {
-    let media = [];
-    media = await Media.scan('resourceId').eq(postId).exec();
+const getMediaById = async (postId: string): Promise<Array<IMediaContent>> => {
+    //let media = [];
+    const media = await Media.scan('resourceId').eq(postId).exec();
     if (!media) {
-        return undefined;
+        return [];
     }
-    return media?.[0];  // Need to return the whole media instead of 1 entry 
+    return media;
 };
 
 // const getMediaById = async (postId: string): Promise<IMediaContent | undefined> => {

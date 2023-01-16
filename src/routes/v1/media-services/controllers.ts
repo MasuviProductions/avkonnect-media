@@ -1,5 +1,5 @@
 import { ErrorMessage, ErrorCode } from '../../../constants/errors';
-import { IMediaContent } from '../../../models/media';
+import { IMediaContent, IMediaType } from '../../../models/media';
 import DB_QUERIES from '../../../utils/db/queries';
 import { HttpError } from '../../../utils/error';
 import { HttpResponse, RequestHandler } from '../../../interfaces/app';
@@ -68,9 +68,16 @@ export const getMedia: RequestHandler<{
     //     ...comment,
     //     relatedSources: [...(relatedUsersRes.data || [])],
     // };
+    //
+    
+    let tempmedia = [];
+    for(let i=0; i<media.length; i=i+1){
+        tempmedia.push(media[i]);
+    }
     const mediaInfo = {
-                ...media,
+                ...tempmedia,
     };
+
     const response: HttpResponse = {
         success: true,
         data: mediaInfo,
