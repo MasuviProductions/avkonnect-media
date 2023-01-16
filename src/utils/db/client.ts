@@ -11,3 +11,4 @@ const initDynamoDB = () => {
 };
 
 export { initDynamoDB };
+

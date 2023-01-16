@@ -6,7 +6,7 @@ const APP = fastify({
     logger: true,
 });
 
-initDynamoDB;
+initDynamoDB();
 
 initializeRoutes(APP);
 

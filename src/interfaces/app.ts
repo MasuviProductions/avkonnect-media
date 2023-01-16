@@ -1,4 +1,5 @@
 import { ObjectType } from 'dynamoose/dist/General';
+import { Document } from 'dynamoose/dist/Document';
 import {
     ContextConfigDefault,
     preHandlerAsyncHookHandler,
@@ -52,3 +53,5 @@ export interface HttpResponse<T = unknown> {
     pagination?: HttpResponsePagination;
     dDBPagination?: HttpDynamoDBResponsePagination;
 }
+
+export type IDynamooseDocument<T> = T & Document;
