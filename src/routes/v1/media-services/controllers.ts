@@ -1,8 +1,8 @@
 import { ErrorMessage, ErrorCode } from '../../../constants/errors';
-import { IMediaContent, IMediaType } from '../../../models/media';
+import { IMediaContent, IMediaType, IMediaUrls } from '../../../models/media';
 import DB_QUERIES from '../../../utils/db/queries';
 import { HttpError } from '../../../utils/error';
-import { HttpResponse, RequestHandler } from '../../../interfaces/app';
+import { HttpResponse, IUpdateMediaRequest, RequestHandler } from '../../../interfaces/app';
 
 export const getUserAuthCheck: RequestHandler<{
     Params: { userId: string };
@@ -70,7 +70,7 @@ export const getMedia: RequestHandler<{
     // };
     //
     
-    let tempmedia = [];
+    const tempmedia = [];
     for(let i=0; i<media.length; i=i+1){
         tempmedia.push(media[i]);
     }
@@ -84,3 +84,103 @@ export const getMedia: RequestHandler<{
     };
     reply.status(200).send(response);
 };
+
+export const updateMedia: RequestHandler<{
+    Params: { fileName: string };
+    Body: IUpdateMediaRequest,
+}> = async (request, reply) => {
+    const {
+        params: { fileName },
+        body
+    } = request;
+    const media = await DB_QUERIES.getFileName(fileName);
+    if (!media) {
+        throw new HttpError(ErrorMessage.NotFound, 404, ErrorCode.NotFound);
+    }
+
+    const newMediaContent: IMediaContent = { ...body.comment, createdAt: new Date(Date.now()) };
+
+    const updatedMedia = await DB_QUERIES.updateMedia(media.fileName, media.createdAt, {
+        contents: [...media.mediaUrls, newMediaContent],
+    });
+
+    // const userIds = getSourceIdsFromSourceMarkups(SourceType.USER, getSourceMarkupsFromPostOrComment(comment));
+    // const relatedUsersRes = await AVKKONNECT_CORE_SERVICE.getUsersInfo(ENV.AUTH_SERVICE_KEY, userIds);
+    // const commentInfo: ICommentResponse = {
+    //     ...comment,
+    //     relatedSources: [...(relatedUsersRes.data || [])],
+    // };
+    //
+    
+    // const tempmedia = [];
+    // for(let i=0; i<media.length; i=i+1){
+    //     tempmedia.push(media[i]);
+    // }
+    const mediaInfo = {
+                ...media,
+    };
+
+    const response: HttpResponse = {
+        success: true,
+        data: mediaInfo,
+    };
+    reply.status(200).send(response);
+};
+
+
+
+// export const updateMedia: RequestHandler<{
+//     Params: { postId: string, fileName: string };
+//     Body: IMediaContent;
+// }> = async (request, reply) => {
+//     const {
+//         body,
+//         params: { postId, fileName },
+//     } = request;
+//     const media = await DB_QUERIES.getMediaById(postId);
+//     if (!media) {
+//         throw new HttpError(ErrorMessage.NotFound, 404, ErrorCode.NotFound);
+//     }
+
+//     // const tempmedia = [];
+//     // for(let i=0; i<media.length; i=i+1){
+//     //     tempmedia.push(media[i]);
+//     // }
+//     // const mediaInfo = {
+//     //             ...tempmedia,
+//     // };
+
+//     const mediaFileNameContents: IMediaContent[] = [...media];
+//     const variable = mediaFileNameContents[0];
+//     // eslint-disable-next-line no-console
+//     console.log(variable);
+
+//     if (body.fileName) {
+//         const updatedMediaContent: IMediaContent = {
+//             fileName: body.fileName,
+//             createdAt: new Date(Date.now()),
+//             resourceId: '123',
+//             resourceType: 'post',
+//             mediaType: 'image',
+//             status: 'uploading',
+//             fileSize: 0,
+//             mediaUrls: []
+//         };
+//         mediaFileNameContents.push(updatedMediaContent);
+//     }
+//     // const updatedMedia = await DB_QUERIES.updateMedia(postId, {
+//     //     ...media,
+//     //     contents: mediaFileNameContents,
+//     // });
+//     // if (!updatedMedia) {
+//     //     throw new HttpError(ErrorMessage.BadRequest, 400, ErrorCode.BadRequest);
+//     // }
+//     // const userIds = getSourceIdsFromSourceMarkups(SourceType.USER, getSourceMarkupsFromPostOrComment(updatedPost));
+//     // const relatedUsersRes = await AVKKONNECT_CORE_SERVICE.getUsersInfo(ENV.AUTH_SERVICE_KEY, userIds);
+//     // const updatedPostInfo: IPostResponse = { ...updatedPost, relatedSources: relatedUsersRes.data || [] };
+//     // const response: HttpResponse = {
+//     //     success: true,
+//     //     data: updatedMedia,
+//     // };
+//     // reply.status(200).send(response);
+// };

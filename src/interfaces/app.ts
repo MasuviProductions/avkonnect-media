@@ -10,6 +10,7 @@ import {
     RouteHandlerMethod,
 } from 'fastify';
 import { ReplyGenericInterface } from 'fastify/types/reply';
+import { IMediaContent, IMediaUrls } from '../models/media';
 
 interface FastifyRouteGenericInterface extends RequestGenericInterface, ReplyGenericInterface {}
 
@@ -44,6 +45,14 @@ export interface HttpResponsePagination {
 export interface HttpDynamoDBResponsePagination {
     nextSearchStartFromKey?: ObjectType;
     count: number;
+}
+
+// export interface IUpdateMediaRequest {
+//     content?: IMediaUrls,
+// }
+
+export interface IUpdateMediaRequest {
+    comment: Omit<IMediaContent, 'createdAt'>;
 }
 
 export interface HttpResponse<T = unknown> {
