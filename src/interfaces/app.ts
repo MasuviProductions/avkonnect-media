@@ -47,13 +47,13 @@ export interface HttpDynamoDBResponsePagination {
     count: number;
 }
 
-// export interface IUpdateMediaRequest {
-//     content?: IMediaUrls,
-// }
-
 export interface IUpdateMediaRequest {
-    comment: Omit<IMediaContent, 'createdAt'>;
+    content: IMediaUrls,
 }
+
+// export interface IUpdateMediaRequest {
+//     content: Omit<IMediaContent, 'createdAt'>;
+// }
 
 export interface HttpResponse<T = unknown> {
     success: boolean;

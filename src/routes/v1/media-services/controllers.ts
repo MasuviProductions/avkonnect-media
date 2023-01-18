@@ -98,31 +98,29 @@ export const updateMedia: RequestHandler<{
         throw new HttpError(ErrorMessage.NotFound, 404, ErrorCode.NotFound);
     }
 
-    const newMediaContent: IMediaContent = { ...body.comment, createdAt: new Date(Date.now()) };
+    const mediaContents: IMediaUrls[] = [body.content];
 
-    const updatedMedia = await DB_QUERIES.updateMedia(media.fileName, media.createdAt, {
-        contents: [...media.mediaUrls, newMediaContent],
+    /*
+    works in a fashion.
+    requestbody format:
+    { 
+    "content": {
+            
+                "height":3,
+                "width":2,
+                "url":"gobba"
+            
+                }
+    }
+    */
+
+    const updatedMedia = await DB_QUERIES.updateMedia(fileName, media.createdAt, {
+        mediaUrls: mediaContents
     });
-
-    // const userIds = getSourceIdsFromSourceMarkups(SourceType.USER, getSourceMarkupsFromPostOrComment(comment));
-    // const relatedUsersRes = await AVKKONNECT_CORE_SERVICE.getUsersInfo(ENV.AUTH_SERVICE_KEY, userIds);
-    // const commentInfo: ICommentResponse = {
-    //     ...comment,
-    //     relatedSources: [...(relatedUsersRes.data || [])],
-    // };
-    //
-    
-    // const tempmedia = [];
-    // for(let i=0; i<media.length; i=i+1){
-    //     tempmedia.push(media[i]);
-    // }
-    const mediaInfo = {
-                ...media,
-    };
 
     const response: HttpResponse = {
         success: true,
-        data: mediaInfo,
+        data: updatedMedia,
     };
     reply.status(200).send(response);
 };
