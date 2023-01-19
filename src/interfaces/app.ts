@@ -10,7 +10,7 @@ import {
     RouteHandlerMethod,
 } from 'fastify';
 import { ReplyGenericInterface } from 'fastify/types/reply';
-import { IMediaContent, IMediaUrls } from '../models/media';
+import { IMediaContent, IMediaStatus, IMediaUrls } from '../models/media';
 
 interface FastifyRouteGenericInterface extends RequestGenericInterface, ReplyGenericInterface {}
 
@@ -48,6 +48,7 @@ export interface HttpDynamoDBResponsePagination {
 }
 
 export interface IUpdateMediaRequest {
+    status: IMediaStatus;
     content: IMediaUrls,
 }
 

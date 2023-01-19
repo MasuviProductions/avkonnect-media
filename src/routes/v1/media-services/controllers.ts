@@ -1,5 +1,5 @@
 import { ErrorMessage, ErrorCode } from '../../../constants/errors';
-import { IMediaContent, IMediaType, IMediaUrls } from '../../../models/media';
+import { IMediaContent, IMediaStatus, IMediaType, IMediaUrls } from '../../../models/media';
 import DB_QUERIES from '../../../utils/db/queries';
 import { HttpError } from '../../../utils/error';
 import { HttpResponse, IUpdateMediaRequest, RequestHandler } from '../../../interfaces/app';
@@ -125,6 +125,31 @@ export const updateMedia: RequestHandler<{
     reply.status(200).send(response);
 };
 
+export const updateMediaStatus: RequestHandler<{
+    Params: { fileName: string };
+    Body: IUpdateMediaRequest,
+}> = async (request, reply) => {
+    const {
+        params: { fileName },
+        body
+    } = request;
+    const media = await DB_QUERIES.getFileName(fileName);
+    if (!media) {
+        throw new HttpError(ErrorMessage.NotFound, 404, ErrorCode.NotFound);
+    }
+
+    const mediaContents: IMediaStatus = body.status;
+
+    const updatedMediaStatus = await DB_QUERIES.updateMediaStatus(fileName, media.createdAt, {
+        status: mediaContents
+    });
+
+    const response: HttpResponse = {
+        success: true,
+        data: updatedMediaStatus,
+    };
+    reply.status(200).send(response);
+};
 
 
 // export const updateMedia: RequestHandler<{

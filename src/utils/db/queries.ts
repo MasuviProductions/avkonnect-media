@@ -29,10 +29,18 @@ const getFileName = async (fileNameVar: string, ) : Promise<IMediaContent |undef
 
 
 const updateMedia = async (fileName: string,createdAt: Date, updatedMedia: Partial<IMediaContent>): Promise<IMediaContent | undefined> => {
-    console.log("loper");
-    console.log(updatedMedia);
+    // console.log("loper");
+    // console.log(updatedMedia);
     //const createdMedia = await Media.update({fileName:fileName}, {mediaUrls:[{"height":2,"width":3,"url":"crap"}]});
     const createdMedia = await Media.update({fileName:fileName}, updatedMedia);
+    return createdMedia;
+};
+
+const updateMediaStatus = async (fileName: string,createdAt: Date, updatedMediaStatus: Partial<IMediaContent>): Promise<IMediaContent | undefined> => {
+    // console.log("loper");
+    // console.log(updatedMedia);
+    //const createdMedia = await Media.update({fileName:fileName}, {mediaUrls:[{"height":2,"width":3,"url":"crap"}]});
+    const createdMedia = await Media.update({fileName:fileName}, updatedMediaStatus);
     return createdMedia;
 };
 
@@ -49,7 +57,8 @@ const DB_QUERIES = {
     createMedia,
     getMediaById,
     getFileName,
-    updateMedia
+    updateMedia,
+    updateMediaStatus
 };
 
 export default DB_QUERIES;
