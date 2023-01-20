@@ -23,35 +23,24 @@ const getFileName = async (fileNameVar: string, ) : Promise<IMediaContent |undef
         return undefined;
     }
     return name[0];
-}
+};
 
-
-
-
-const updateMedia = async (fileName: string,createdAt: Date, updatedMedia: Partial<IMediaContent>): Promise<IMediaContent | undefined> => {
-    // console.log("loper");
-    // console.log(updatedMedia);
+const updateMedia = async (fileName: string, updatedMedia: Partial<IMediaContent>): Promise<IMediaContent | undefined> => {
     //const createdMedia = await Media.update({fileName:fileName}, {mediaUrls:[{"height":2,"width":3,"url":"crap"}]});
     const createdMedia = await Media.update({fileName:fileName}, updatedMedia);
+    if(!createdMedia) {
+        return undefined;
+    }
     return createdMedia;
 };
 
-const updateMediaStatus = async (fileName: string,createdAt: Date, updatedMediaStatus: Partial<IMediaContent>): Promise<IMediaContent | undefined> => {
-    // console.log("loper");
-    // console.log(updatedMedia);
-    //const createdMedia = await Media.update({fileName:fileName}, {mediaUrls:[{"height":2,"width":3,"url":"crap"}]});
+const updateMediaStatus = async (fileName: string, updatedMediaStatus: Partial<IMediaContent>): Promise<IMediaContent | undefined> => {
     const createdMedia = await Media.update({fileName:fileName}, updatedMediaStatus);
+    if(!createdMedia) {
+        return undefined;
+    }
     return createdMedia;
 };
-
-// const updateComment = async (
-//     sourceId: string,
-//     createdAt: Date,
-//     updatedComment: Partial<Pick<IComment, 'contents' | 'isDeleted' | 'isBanned'>>
-// ): Promise<IComment | undefined> => {
-//     const comment = await Comment.update({ sourceId: sourceId, createdAt: createdAt.getTime() }, updatedComment);
-//     return comment;
-// };
 
 const DB_QUERIES = {
     createMedia,

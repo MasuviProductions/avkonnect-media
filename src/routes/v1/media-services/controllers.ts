@@ -85,7 +85,7 @@ export const getMedia: RequestHandler<{
     reply.status(200).send(response);
 };
 
-export const updateMedia: RequestHandler<{
+export const updateMediaUrls: RequestHandler<{
     Params: { fileName: string };
     Body: IUpdateMediaRequest,
 }> = async (request, reply) => {
@@ -114,7 +114,7 @@ export const updateMedia: RequestHandler<{
     }
     */
 
-    const updatedMedia = await DB_QUERIES.updateMedia(fileName, media.createdAt, {
+    const updatedMedia = await DB_QUERIES.updateMedia(fileName, {
         mediaUrls: mediaContents
     });
 
@@ -140,7 +140,7 @@ export const updateMediaStatus: RequestHandler<{
 
     const mediaContents: IMediaStatus = body.status;
 
-    const updatedMediaStatus = await DB_QUERIES.updateMediaStatus(fileName, media.createdAt, {
+    const updatedMediaStatus = await DB_QUERIES.updateMediaStatus(fileName, {
         status: mediaContents
     });
 
