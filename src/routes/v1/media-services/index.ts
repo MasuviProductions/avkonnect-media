@@ -1,6 +1,13 @@
 import { FastifyInstance, FastifyRegisterOptions, FastifyPluginOptions } from 'fastify';
 import { authHandler } from '../../../middlewares/authHandler';
-import { getUserAuthCheck, createMedia, getMedia, updateMediaStatus, updateMediaUrls} from './controllers';
+import { 
+    getUserAuthCheck,
+    createMedia,
+    getMedia,
+    updateMediaStatus,
+    updateMediaUrls,
+    getMediaStatus
+    } from './controllers';
 
 export const initializeMediaRoutes = (
     fastify: FastifyInstance,
@@ -25,6 +32,8 @@ Request body:
 /* API to get all the media entries that have resourceId == postId
 */
     fastify.get('/media/:postId', { preHandler: [authHandler] }, getMedia);
+
+    fastify.get('/media/status/:postId', {preHandler: [authHandler]}, getMediaStatus);
 
     fastify.patch('/media/updateMediaUrls/:fileName',{preHandler: [authHandler]},updateMediaUrls);
 

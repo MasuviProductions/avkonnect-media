@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ErrorMessage, ErrorCode } from '../../../constants/errors';
 import { IMediaContent, IMediaStatus, IMediaType, IMediaUrls } from '../../../models/media';
 import DB_QUERIES from '../../../utils/db/queries';
@@ -78,6 +79,66 @@ export const getMedia: RequestHandler<{
                 ...tempmedia,
     };
 
+    const response: HttpResponse = {
+        success: true,
+        data: mediaInfo,
+    };
+    reply.status(200).send(response);
+};
+
+export const getMediaStatus: RequestHandler<{
+    Params: { postId: string };
+}> = async (request, reply) => {
+    const {
+        params: { postId },
+    } = request;
+    const media = await DB_QUERIES.getMediaById(postId);
+    if (!media) {
+        throw new HttpError(ErrorMessage.NotFound, 404, ErrorCode.NotFound);
+    }
+    // const userIds = getSourceIdsFromSourceMarkups(SourceType.USER, getSourceMarkupsFromPostOrComment(comment));
+    // const relatedUsersRes = await AVKKONNECT_CORE_SERVICE.getUsersInfo(ENV.AUTH_SERVICE_KEY, userIds);
+    // const commentInfo: ICommentResponse = {
+    //     ...comment,
+    //     relatedSources: [...(relatedUsersRes.data || [])],
+    // };
+    //
+    
+    const tempmedia = [];
+    const opMedia = [];
+    let successflag,errorflag,processingflag;
+    for(let i=0; i<media.length; i=i+1){
+        tempmedia.push(media[i].status);
+        // console.log("line 109",media[i].status);
+        // console.log(tempmedia);
+    }
+
+    for(let j=0; j<tempmedia.length;j=j+1){
+        // console.log("line 116",tempmedia[j]);
+        if(tempmedia[j]  === 'error'){
+             errorflag = 1;
+        }if (tempmedia[j] ==='processing'){
+            processingflag = 1;
+        }if (tempmedia[j] ==='success'){
+            successflag = 1;
+        } 
+    }
+    // console.log(successflag, processingflag , errorflag);
+
+
+    if(errorflag === 1){
+        opMedia.push('error');
+    }else if(!errorflag){
+        if(processingflag === 1){
+            opMedia.push('processing');
+        }else if( successflag === 1 && !processingflag){
+            opMedia.push('success');
+        }
+    } else opMedia.push('uploading');  // all errors,all success, single error,all processing,mixed combo,
+
+    const mediaInfo = {
+        ...opMedia,
+    };
     const response: HttpResponse = {
         success: true,
         data: mediaInfo,
