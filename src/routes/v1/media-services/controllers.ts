@@ -1,10 +1,14 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ErrorMessage, ErrorCode } from '../../../constants/errors';
 import { IMediaContent, IMediaStatus, IMediaType, IMediaUrls } from '../../../models/media';
 import DB_QUERIES from '../../../utils/db/queries';
 import { HttpError } from '../../../utils/error';
 import { HttpResponse, IUpdateMediaRequest, RequestHandler } from '../../../interfaces/app';
 
+/*
+Function to authenticate the userId
+Parameters: userId
+Body: NA
+*/
 export const getUserAuthCheck: RequestHandler<{
     Params: { userId: string };
 }> = async (request, reply) => {
@@ -23,18 +27,30 @@ export const getUserAuthCheck: RequestHandler<{
     reply.status(400).send('user prohibited');
 };
 
+/*
+Function to create Media Entries
+Parameters: resourceId(postId)
+Body: {
+    resourceId,
+    resourceType,
+    mediaType,
+    fileName,
+    status,
+    fileSize,
+    mediaUrls
+} 
+*/
 export const createMedia: RequestHandler<{
     Body: IMediaContent;
     Params: {postId: string};
 }> = async (request, reply) => {
     const { authUser, body, params } = request;
-    // const resource = await getResourceBasedOnResourceType(body.resourceType, body.resourceId);
 
-    // const currentTime = Date.now();
+    const currentTime = Date.now();
     const media: IMediaContent = {
         resourceId: body.resourceId,
         mediaUrls: body.mediaUrls,
-        createdAt: body.createdAt,
+        createdAt: new Date(currentTime),
         resourceType: body.resourceType,
         mediaType: body.mediaType,
         fileName: body.fileName,
@@ -53,6 +69,11 @@ export const createMedia: RequestHandler<{
     reply.status(200).send(response);
 };
 
+/*
+Function to get Media entries
+Parameters: resourceId(postId)
+Body: NA
+*/
 export const getMedia: RequestHandler<{
     Params: { postId: string };
 }> = async (request, reply) => {
@@ -63,14 +84,9 @@ export const getMedia: RequestHandler<{
     if (!media) {
         throw new HttpError(ErrorMessage.NotFound, 404, ErrorCode.NotFound);
     }
-    // const userIds = getSourceIdsFromSourceMarkups(SourceType.USER, getSourceMarkupsFromPostOrComment(comment));
-    // const relatedUsersRes = await AVKKONNECT_CORE_SERVICE.getUsersInfo(ENV.AUTH_SERVICE_KEY, userIds);
-    // const commentInfo: ICommentResponse = {
-    //     ...comment,
-    //     relatedSources: [...(relatedUsersRes.data || [])],
-    // };
-    //
     
+    // iterate through the data returned from the DB and
+    // move the required data to another array
     const tempmedia = [];
     for(let i=0; i<media.length; i=i+1){
         tempmedia.push(media[i]);
@@ -86,6 +102,11 @@ export const getMedia: RequestHandler<{
     reply.status(200).send(response);
 };
 
+/* 
+Function to get consolidated status of a resourceId
+Parameters: resourceId(postId)
+Body: NA
+*/
 export const getMediaStatus: RequestHandler<{
     Params: { postId: string };
 }> = async (request, reply) => {
@@ -96,45 +117,40 @@ export const getMediaStatus: RequestHandler<{
     if (!media) {
         throw new HttpError(ErrorMessage.NotFound, 404, ErrorCode.NotFound);
     }
-    // const userIds = getSourceIdsFromSourceMarkups(SourceType.USER, getSourceMarkupsFromPostOrComment(comment));
-    // const relatedUsersRes = await AVKKONNECT_CORE_SERVICE.getUsersInfo(ENV.AUTH_SERVICE_KEY, userIds);
-    // const commentInfo: ICommentResponse = {
-    //     ...comment,
-    //     relatedSources: [...(relatedUsersRes.data || [])],
-    // };
-    //
     
+    // iterate through the data returned from the DB and
+    // move the required data to another array
     const tempmedia = [];
     const opMedia = [];
     let successflag,errorflag,processingflag;
     for(let i=0; i<media.length; i=i+1){
         tempmedia.push(media[i].status);
-        // console.log("line 109",media[i].status);
-        // console.log(tempmedia);
     }
 
+    // iterate through the array of status and set appropriate flags
     for(let j=0; j<tempmedia.length;j=j+1){
-        // console.log("line 116",tempmedia[j]);
         if(tempmedia[j]  === 'error'){
              errorflag = 1;
-        }if (tempmedia[j] === 'uploading' || tempmedia[j] === 'uploaded'){
+        }if (tempmedia[j] === 'uploading' || tempmedia[j] === 'uploaded' || tempmedia[j] === 'processing'){
             processingflag = 1;
         }if (tempmedia[j] ==='success'){
             successflag = 1;
         } 
     }
-    // console.log(successflag, processingflag , errorflag);
 
-
+    // check the flags and decide what needs to be returned in the following order
+    // 1. if all statuses are success, return success
+    // 2. if any status is error, return error
+    // 3. if any status is uploading/uploaded/processing, return in-process
     if(errorflag === 1){
         opMedia.push('error');
     }else if(!errorflag){
         if(processingflag === 1){
-            opMedia.push('In process');
+            opMedia.push('in-process');
         }else if( successflag === 1 && !processingflag){
             opMedia.push('success');
         }
-    }   // all errors,all success, single error,all processing,mixed combo,
+    }
 
     const mediaInfo = {
         "status" : opMedia[0],
@@ -146,6 +162,20 @@ export const getMediaStatus: RequestHandler<{
     reply.status(200).send(response);
 };
 
+
+/*
+Function to update the mediaUrls of a media entry
+Parameters: fileName
+Body: {     
+"content": {
+            
+                "height":3,
+                "width":2,
+                "url":"xxx"
+            
+                }
+    }
+*/
 export const updateMediaUrls: RequestHandler<{
     Params: { fileName: string };
     Body: IUpdateMediaRequest,
@@ -186,6 +216,13 @@ export const updateMediaUrls: RequestHandler<{
     reply.status(200).send(response);
 };
 
+/*
+Function to update the status of a media entry
+Parameters: fileName
+Body: { 
+    "status": "success"
+    }
+*/
 export const updateMediaStatus: RequestHandler<{
     Params: { fileName: string };
     Body: IUpdateMediaRequest,
@@ -211,60 +248,3 @@ export const updateMediaStatus: RequestHandler<{
     };
     reply.status(200).send(response);
 };
-
-
-// export const updateMedia: RequestHandler<{
-//     Params: { postId: string, fileName: string };
-//     Body: IMediaContent;
-// }> = async (request, reply) => {
-//     const {
-//         body,
-//         params: { postId, fileName },
-//     } = request;
-//     const media = await DB_QUERIES.getMediaById(postId);
-//     if (!media) {
-//         throw new HttpError(ErrorMessage.NotFound, 404, ErrorCode.NotFound);
-//     }
-
-//     // const tempmedia = [];
-//     // for(let i=0; i<media.length; i=i+1){
-//     //     tempmedia.push(media[i]);
-//     // }
-//     // const mediaInfo = {
-//     //             ...tempmedia,
-//     // };
-
-//     const mediaFileNameContents: IMediaContent[] = [...media];
-//     const variable = mediaFileNameContents[0];
-//     // eslint-disable-next-line no-console
-//     console.log(variable);
-
-//     if (body.fileName) {
-//         const updatedMediaContent: IMediaContent = {
-//             fileName: body.fileName,
-//             createdAt: new Date(Date.now()),
-//             resourceId: '123',
-//             resourceType: 'post',
-//             mediaType: 'image',
-//             status: 'uploading',
-//             fileSize: 0,
-//             mediaUrls: []
-//         };
-//         mediaFileNameContents.push(updatedMediaContent);
-//     }
-//     // const updatedMedia = await DB_QUERIES.updateMedia(postId, {
-//     //     ...media,
-//     //     contents: mediaFileNameContents,
-//     // });
-//     // if (!updatedMedia) {
-//     //     throw new HttpError(ErrorMessage.BadRequest, 400, ErrorCode.BadRequest);
-//     // }
-//     // const userIds = getSourceIdsFromSourceMarkups(SourceType.USER, getSourceMarkupsFromPostOrComment(updatedPost));
-//     // const relatedUsersRes = await AVKKONNECT_CORE_SERVICE.getUsersInfo(ENV.AUTH_SERVICE_KEY, userIds);
-//     // const updatedPostInfo: IPostResponse = { ...updatedPost, relatedSources: relatedUsersRes.data || [] };
-//     // const response: HttpResponse = {
-//     //     success: true,
-//     //     data: updatedMedia,
-//     // };
-//     // reply.status(200).send(response);
-// };

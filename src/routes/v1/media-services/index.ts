@@ -17,15 +17,6 @@ export const initializeMediaRoutes = (
     fastify.get('/user/:userId', { preHandler: [authHandler] }, getUserAuthCheck);
 
 /* API to create media entries
-Request body:
-{
-    resourceId,
-    resourceType,
-    mediaType,
-    fileName,
-    status,
-    fileSize
-} 
 */
     fastify.post('/media/createMedia', { preHandler: [authHandler] }, createMedia); 
 
@@ -33,13 +24,17 @@ Request body:
 */
     fastify.get('/media/:postId', { preHandler: [authHandler] }, getMedia);
 
+/* API to get the consolidated status of all the media entries having the same resourceId
+*/
     fastify.get('/media/status/:postId', {preHandler: [authHandler]}, getMediaStatus);
 
+/* API to update the mediaUrls of a media
+*/
     fastify.patch('/media/updateMediaUrls/:fileName',{preHandler: [authHandler]},updateMediaUrls);
 
+/* API to update the status of a media
+*/
     fastify.patch('/media/updateMediaStatus/:fileName',{preHandler: [authHandler]},updateMediaStatus);
-
-
 
     done?.();
 };
