@@ -29,7 +29,7 @@ export const getUserAuthCheck: RequestHandler<{
 
 /*
 Function to create Media Entries
-Parameters: resourceId(postId)
+Parameters: NA
 Body: {
     resourceId,
     resourceType,
@@ -166,15 +166,20 @@ export const getMediaStatus: RequestHandler<{
 /*
 Function to update the mediaUrls of a media entry
 Parameters: fileName
-Body: {     
-"content": {
-            
-                "height":3,
-                "width":2,
-                "url":"xxx"
-            
-                }
+Body: { 
+    "mediaUrls": [
+        {
+            "height":3,
+            "width":2,
+            "url":"gobba"
+    },
+    {
+            "height":3,
+            "width":2,
+            "url":"dabba"
     }
+    ]
+}
 */
 export const updateMediaUrls: RequestHandler<{
     Params: { fileName: string };
@@ -189,21 +194,7 @@ export const updateMediaUrls: RequestHandler<{
         throw new HttpError(ErrorMessage.NotFound, 404, ErrorCode.NotFound);
     }
 
-    const mediaContents: IMediaUrls[] = [body.content];
-
-    /*
-    works in a fashion.
-    requestbody format:
-    { 
-    "content": {
-            
-                "height":3,
-                "width":2,
-                "url":"gobba"
-            
-                }
-    }
-    */
+    const mediaContents: IMediaUrls[] = body.mediaUrls;
 
     const updatedMedia = await DB_QUERIES.updateMedia(fileName, {
         mediaUrls: mediaContents

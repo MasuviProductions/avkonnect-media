@@ -49,7 +49,7 @@ export interface HttpDynamoDBResponsePagination {
 
 export interface IUpdateMediaRequest {
     status: IMediaStatus;
-    content: IMediaUrls,
+    mediaUrls: IMediaUrls[],
 }
 
 // export interface IUpdateMediaRequest {
