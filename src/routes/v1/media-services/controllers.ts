@@ -117,13 +117,10 @@ export const getMediaStatus: RequestHandler<{
         // console.log("line 116",tempmedia[j]);
         if(tempmedia[j]  === 'error'){
              errorflag = 1;
-        }if (tempmedia[j] === 'processing'){
+        }if (tempmedia[j] === 'uploading' || tempmedia[j] === 'uploaded'){
             processingflag = 1;
-        }if (tempmedia[j] === 'success'){
+        }if (tempmedia[j] ==='success'){
             successflag = 1;
-        // eslint-disable-next-line no-constant-condition
-        }if(tempmedia[j] === 'uploading' || 'uploaded'){
-            processingflag = 1;
         } 
     }
     // console.log(successflag, processingflag , errorflag);
@@ -137,10 +134,10 @@ export const getMediaStatus: RequestHandler<{
         }else if( successflag === 1 && !processingflag){
             opMedia.push('success');
         }
-    } // all errors,all success, single error,all processing,mixed combo,
+    }   // all errors,all success, single error,all processing,mixed combo,
 
     const mediaInfo = {
-       "status" : opMedia[0],
+        "status" : opMedia[0],
     };
     const response: HttpResponse = {
         success: true,
