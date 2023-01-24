@@ -22,7 +22,10 @@ jobs:
                   [[ ${GITHUB_REF#refs/heads/} = main ]] && echo "${PROD_VARIABLES}" >> .env || echo "${DEV_VARIABLES}" >> .env
 
             - name: Install node packages
-              run: npm install
+              run: |
+                  touch .npmrc && echo "${NPMRC}" >> .npmrc
+                  cat .npmrc
+                  npm install
 
             - name: Code Lint
               run: npm run lint:fix
