@@ -12,6 +12,7 @@ jobs:
         env:
             PROD_VARIABLES: ${{ secrets.PROD_VARIABLES }}
             DEV_VARIABLES: ${{ secrets.DEV_VARIABLES }}
+            NPMRC: ${{secrets.NPMRC}}
 
         steps:
             - uses: actions/checkout@v2
