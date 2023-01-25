@@ -10,7 +10,7 @@ import {
     RouteHandlerMethod,
 } from 'fastify';
 import { ReplyGenericInterface } from 'fastify/types/reply';
-import { IMediaContent, IMediaStatus, IMediaUrls } from '../models/media';
+import { IMediaStatus, IMediaUrls } from '../models/media';
 
 interface FastifyRouteGenericInterface extends RequestGenericInterface, ReplyGenericInterface {}
 

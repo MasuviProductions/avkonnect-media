@@ -1,5 +1,5 @@
 import { ErrorMessage, ErrorCode } from '../../../constants/errors';
-import { IMediaContent, IMediaStatus, IMediaType, IMediaUrls } from '../../../models/media';
+import { IMediaContent, IMediaStatus, IMediaUrls } from '../../../models/media';
 import DB_QUERIES from '../../../utils/db/queries';
 import { HttpError } from '../../../utils/error';
 import { HttpResponse, IUpdateMediaRequest, RequestHandler } from '../../../interfaces/app';
@@ -44,7 +44,7 @@ export const createMedia: RequestHandler<{
     Body: IMediaContent;
     Params: {postId: string};
 }> = async (request, reply) => {
-    const { authUser, body, params } = request;
+    const {body} = request;
 
     const currentTime = Date.now();
     const media: IMediaContent = {

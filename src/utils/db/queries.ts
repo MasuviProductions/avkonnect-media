@@ -1,4 +1,3 @@
-import { IUpdateMediaRequest } from "../../interfaces/app";
 import Media, { IMediaContent } from "../../models/media";
 
 /*
