@@ -42,9 +42,9 @@ Body: {
 */
 export const createMedia: RequestHandler<{
     Body: IMediaContent;
-    Params: {postId: string};
+    Params: { postId: string };
 }> = async (request, reply) => {
-    const {body} = request;
+    const { body } = request;
 
     const currentTime = Date.now();
     const media: IMediaContent = {
@@ -62,7 +62,6 @@ export const createMedia: RequestHandler<{
         throw new HttpError(ErrorMessage.CreationError, 400, ErrorCode.CreationError);
     }
 
-
     const response: HttpResponse<IMediaContent> = {
         success: true,
     };
@@ -71,28 +70,28 @@ export const createMedia: RequestHandler<{
 
 /*
 Function to get Media entries
-Parameters: resourceId(postId)
+Parameters: resourceType(post), resourceId(postId)
 Body: NA
 */
 export const getMedia: RequestHandler<{
-    Params: { postId: string };
+    Params: { resourceType: string; postId: string };
 }> = async (request, reply) => {
     const {
-        params: { postId },
+        params: { resourceType, postId },
     } = request;
-    const media = await DB_QUERIES.getMediaById(postId);
+    const media = await DB_QUERIES.getMediaById(resourceType, postId);
     if (!media) {
         throw new HttpError(ErrorMessage.NotFound, 404, ErrorCode.NotFound);
     }
-    
+
     // iterate through the data returned from the DB and
     // move the required data to another array
     const tempmedia = [];
-    for(let i=0; i<media.length; i=i+1){
+    for (let i = 0; i < media.length; i = i + 1) {
         tempmedia.push(media[i]);
     }
     const mediaInfo = {
-                ...tempmedia,
+        ...tempmedia,
     };
 
     const response: HttpResponse = {
@@ -104,56 +103,58 @@ export const getMedia: RequestHandler<{
 
 /* 
 Function to get consolidated status of a resourceId
-Parameters: resourceId(postId)
+Parameters: resourceType(post), resourceId(postId)
 Body: NA
 */
 export const getMediaStatus: RequestHandler<{
-    Params: { postId: string };
+    Params: { resourceType: string; postId: string };
 }> = async (request, reply) => {
     const {
-        params: { postId },
+        params: { resourceType, postId },
     } = request;
-    const media = await DB_QUERIES.getMediaById(postId);
+    const media = await DB_QUERIES.getMediaById(resourceType, postId);
     if (!media) {
         throw new HttpError(ErrorMessage.NotFound, 404, ErrorCode.NotFound);
     }
-    
+
     // iterate through the data returned from the DB and
     // move the required data to another array
     const tempmedia = [];
     const opMedia = [];
-    let successflag,errorflag,processingflag;
-    for(let i=0; i<media.length; i=i+1){
+    let successflag, errorflag, processingflag;
+    for (let i = 0; i < media.length; i = i + 1) {
         tempmedia.push(media[i].status);
     }
 
     // iterate through the array of status and set appropriate flags
-    for(let j=0; j<tempmedia.length;j=j+1){
-        if(tempmedia[j]  === 'error'){
-             errorflag = 1;
-        }if (tempmedia[j] === 'uploading' || tempmedia[j] === 'uploaded' || tempmedia[j] === 'processing'){
+    for (let j = 0; j < tempmedia.length; j = j + 1) {
+        if (tempmedia[j] === 'error') {
+            errorflag = 1;
+        }
+        if (tempmedia[j] === 'uploading' || tempmedia[j] === 'uploaded' || tempmedia[j] === 'processing') {
             processingflag = 1;
-        }if (tempmedia[j] ==='success'){
+        }
+        if (tempmedia[j] === 'success') {
             successflag = 1;
-        } 
+        }
     }
 
     // check the flags and decide what needs to be returned in the following order
     // 1. if all statuses are success, return success
     // 2. if any status is error, return error
     // 3. if any status is uploading/uploaded/processing, return in-process
-    if(errorflag === 1){
+    if (errorflag === 1) {
         opMedia.push('error');
-    }else if(!errorflag){
-        if(processingflag === 1){
+    } else if (!errorflag) {
+        if (processingflag === 1) {
             opMedia.push('in-process');
-        }else if( successflag === 1 && !processingflag){
+        } else if (successflag === 1 && !processingflag) {
             opMedia.push('success');
         }
     }
 
     const mediaInfo = {
-        "status" : opMedia[0],
+        status: opMedia[0],
     };
     const response: HttpResponse = {
         success: true,
@@ -162,10 +163,9 @@ export const getMediaStatus: RequestHandler<{
     reply.status(200).send(response);
 };
 
-
 /*
 Function to update the mediaUrls of a media entry
-Parameters: fileName
+Parameters: resourceType(post), fileName
 Body: { 
     "mediaUrls": [
         {
@@ -182,22 +182,22 @@ Body: {
 }
 */
 export const updateMediaUrls: RequestHandler<{
-    Params: { fileName: string };
-    Body: IUpdateMediaRequest,
+    Params: { resourceType: string; fileName: string };
+    Body: IUpdateMediaRequest;
 }> = async (request, reply) => {
     const {
-        params: { fileName },
-        body
+        params: { resourceType, fileName },
+        body,
     } = request;
-    const media = await DB_QUERIES.getFileName(fileName);
+    const media = await DB_QUERIES.getFileName(resourceType, fileName);
     if (!media) {
         throw new HttpError(ErrorMessage.NotFound, 404, ErrorCode.NotFound);
     }
 
     const mediaContents: IMediaUrls[] = body.mediaUrls;
 
-    const updatedMedia = await DB_QUERIES.updateMedia(fileName, {
-        mediaUrls: mediaContents
+    const updatedMedia = await DB_QUERIES.updateMedia(resourceType, fileName, {
+        mediaUrls: mediaContents,
     });
 
     const response: HttpResponse = {
@@ -209,28 +209,28 @@ export const updateMediaUrls: RequestHandler<{
 
 /*
 Function to update the status of a media entry
-Parameters: fileName
+Parameters: resourceType(post), fileName
 Body: { 
     "status": "success"
     }
 */
 export const updateMediaStatus: RequestHandler<{
-    Params: { fileName: string };
-    Body: IUpdateMediaRequest,
+    Params: { resourceType: string; fileName: string };
+    Body: IUpdateMediaRequest;
 }> = async (request, reply) => {
     const {
-        params: { fileName },
-        body
+        params: { resourceType, fileName },
+        body,
     } = request;
-    const media = await DB_QUERIES.getFileName(fileName);
+    const media = await DB_QUERIES.getFileName(resourceType, fileName);
     if (!media) {
         throw new HttpError(ErrorMessage.NotFound, 404, ErrorCode.NotFound);
     }
 
     const mediaContents: IMediaStatus = body.status;
 
-    const updatedMediaStatus = await DB_QUERIES.updateMediaStatus(fileName, {
-        status: mediaContents
+    const updatedMediaStatus = await DB_QUERIES.updateMediaStatus(resourceType, fileName, {
+        status: mediaContents,
     });
 
     const response: HttpResponse = {
