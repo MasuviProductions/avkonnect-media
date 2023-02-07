@@ -36,7 +36,7 @@ Body: {
     mediaType,
     fileName,
     status,
-    fileSize,
+    metaData,
     mediaUrls
 } 
 */
@@ -55,7 +55,7 @@ export const createMedia: RequestHandler<{
         mediaType: body.mediaType,
         fileName: body.fileName,
         status: body.status,
-        fileSize: body.fileSize,
+        metaData: body.metaData,
     };
     const createdMedia = await DB_QUERIES.createMedia(media);
     if (!createdMedia) {
@@ -171,12 +171,12 @@ Body: {
         {
             "height":3,
             "width":2,
-            "url":"gobba"
+            "url":"https://s3urls.com"
     },
     {
             "height":3,
             "width":2,
-            "url":"dabba"
+            "url":"https://s3urls.com"
     }
     ]
 }

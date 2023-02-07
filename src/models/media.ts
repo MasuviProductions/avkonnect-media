@@ -6,17 +6,34 @@ export type IMediaType = 'image' | 'video';
 
 export type IMediaStatus = 'uploading' | 'uploaded' | 'processing' | 'success' | 'error';
 
+// meta data will contain all kinds of info about the media
+export interface IMetaData {
+    originalUrl: string; // s3 url of the original media file
+    fileName: string; // original name of the file
+    resolution: string; // height x width
+    fileSize: number; // size of the file in bytes
+    colorSpace: string; // the color space of the media
+    creator: string; // creator of the file
+}
+
+const metaDataSchema = new dynamoose.Schema({
+    originalUrl: { type: String },
+    fileName: { type: String },
+    resolution: { type: String },
+    fileSize: { type: Number },
+    colorSpace: { type: String },
+    creator: { type: String },
+});
+
 // media URLs will contain the resolution of media along with the s3 URL
 export interface IMediaUrls {
     url: string;
-    height: number;
-    width: number;
+    meta: IMetaData;
 }
 
 const mediaUrlSchema = new dynamoose.Schema({
     url: { type: String },
-    height: { type: Number },
-    width: { type: Number },
+    meta: { type: Object, schema: metaDataSchema },
 });
 
 // media content has the data for each media uploaded
@@ -27,7 +44,7 @@ export interface IMediaContent {
     createdAt: Date;
     fileName: string; // filename should be unique
     status: IMediaStatus; // status of the media
-    fileSize: number; // size of the file in bytes
+    metaData: IMetaData;
     mediaUrls: IMediaUrls[];
 }
 
@@ -38,7 +55,7 @@ const mediaSchema = new dynamoose.Schema({
     createdAt: { type: Date },
     fileName: { type: String, rangeKey: true }, //sort key
     status: { type: String },
-    fileSize: { type: Number },
+    metaData: { type: Object, schema: metaDataSchema },
     mediaUrls: { type: Array, schema: Array.of(mediaUrlSchema) },
 });
 
